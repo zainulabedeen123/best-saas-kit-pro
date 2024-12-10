@@ -6,6 +6,7 @@ import {
   CodeBracketIcon,
   RocketLaunchIcon,
   CpuChipIcon,
+  BookOpenIcon,
 } from '@heroicons/react/24/outline'
 import PricingCard from './components/PricingCard'
 import FaqItem from './components/FaqItem'
@@ -139,6 +140,10 @@ export default function Home() {
             <div className="hidden md:flex items-center space-x-8">
               <Link href="/pricing" className="text-sm text-white/70 hover:text-white">
                 Pricing
+              </Link>
+              <Link href="/docs" className="text-sm text-white/70 hover:text-white flex items-center space-x-1">
+                <BookOpenIcon className="w-4 h-4" />
+                <span>Docs</span>
               </Link>
               <Link href="/blog" className="text-sm text-white/70 hover:text-white">
                 Blog
