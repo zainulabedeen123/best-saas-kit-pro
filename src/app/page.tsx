@@ -7,6 +7,9 @@ import {
   RocketLaunchIcon,
   CpuChipIcon,
   BookOpenIcon,
+  EnvelopeIcon,
+  PhoneIcon,
+  MapPinIcon,
 } from '@heroicons/react/24/outline'
 import PricingCard from './components/PricingCard'
 import FaqItem from './components/FaqItem'
@@ -138,6 +141,9 @@ export default function Home() {
               </Link>
             </div>
             <div className="hidden md:flex items-center space-x-8">
+              <Link href="/features" className="text-sm text-white/70 hover:text-white">
+                Features
+              </Link>
               <Link href="/pricing" className="text-sm text-white/70 hover:text-white">
                 Pricing
               </Link>
@@ -147,9 +153,6 @@ export default function Home() {
               </Link>
               <Link href="/blog" className="text-sm text-white/70 hover:text-white">
                 Blog
-              </Link>
-              <Link href="/more" className="text-sm text-white/70 hover:text-white">
-                More
               </Link>
             </div>
             <div className="flex items-center space-x-4">
@@ -395,6 +398,170 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Contact Form Section */}
+      <section className="py-20 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Get in Touch
+            </h2>
+            <p className="text-lg text-white/60 max-w-2xl mx-auto">
+              Have questions about our product? Need help getting started? We're here to help.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+            {/* Contact Information */}
+            <div className="space-y-8">
+              <div>
+                <h3 className="text-xl font-semibold text-white mb-4">Contact Information</h3>
+                <p className="text-white/60 mb-6">
+                  Fill out the form and we'll get back to you within 24 hours.
+                </p>
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex items-start space-x-4">
+                  <div className="p-3 bg-white/5 rounded-lg">
+                    <EnvelopeIcon className="w-6 h-6 text-[#FFBE1A]" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-medium mb-1">Email</h4>
+                    <a href="mailto:contact@example.com" className="text-white/60 hover:text-[#FFBE1A]">
+                      contact@example.com
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="p-3 bg-white/5 rounded-lg">
+                    <PhoneIcon className="w-6 h-6 text-[#FFBE1A]" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-medium mb-1">Phone</h4>
+                    <a href="tel:+1234567890" className="text-white/60 hover:text-[#FFBE1A]">
+                      +1 (234) 567-890
+                    </a>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="p-3 bg-white/5 rounded-lg">
+                    <MapPinIcon className="w-6 h-6 text-[#FFBE1A]" />
+                  </div>
+                  <div>
+                    <h4 className="text-white font-medium mb-1">Office</h4>
+                    <p className="text-white/60">
+                      123 Innovation Street<br />
+                      San Francisco, CA 94107
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="pt-8">
+                <h4 className="text-white font-medium mb-4">Follow Us</h4>
+                <div className="flex space-x-4">
+                  <a href="#" className="p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <svg className="w-5 h-5 text-[#FFBE1A]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  </a>
+                  <a href="#" className="p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <svg className="w-5 h-5 text-[#FFBE1A]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 007.557 2.209c9.053 0 13.998-7.496 13.998-13.985 0-.21 0-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                    </svg>
+                  </a>
+                  <a href="#" className="p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <svg className="w-5 h-5 text-[#FFBE1A]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 8.221l-1.97 9.28c-.145.658-.537.818-1.084.508l-3-2.21-1.446 1.394c-.14.18-.357.223-.548.223l.188-2.85 5.18-4.68c.223-.204-.054-.31-.346-.106l-6.4 4.02-2.76-.92c-.6-.183-.612-.6.125-.89l10.782-4.156c.5-.183.94.114.78.89z"/>
+                    </svg>
+                  </a>
+                  <a href="#" className="p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <svg className="w-5 h-5 text-[#FFBE1A]" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Form */}
+            <div className="bg-white/[0.02] rounded-2xl p-8 border border-white/5">
+              <form className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div>
+                    <label htmlFor="first_name" className="block text-sm font-medium text-white mb-2">
+                      First Name
+                    </label>
+                    <input
+                      type="text"
+                      id="first_name"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFBE1A]/50 focus:border-[#FFBE1A] text-white placeholder-white/40"
+                      placeholder="John"
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="last_name" className="block text-sm font-medium text-white mb-2">
+                      Last Name
+                    </label>
+                    <input
+                      type="text"
+                      id="last_name"
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFBE1A]/50 focus:border-[#FFBE1A] text-white placeholder-white/40"
+                      placeholder="Doe"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+                    Email
+                  </label>
+                  <input
+                    type="email"
+                    id="email"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFBE1A]/50 focus:border-[#FFBE1A] text-white placeholder-white/40"
+                    placeholder="john@example.com"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="subject" className="block text-sm font-medium text-white mb-2">
+                    Subject
+                  </label>
+                  <input
+                    type="text"
+                    id="subject"
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFBE1A]/50 focus:border-[#FFBE1A] text-white placeholder-white/40"
+                    placeholder="How can we help?"
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="message" className="block text-sm font-medium text-white mb-2">
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    rows={4}
+                    className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FFBE1A]/50 focus:border-[#FFBE1A] text-white placeholder-white/40"
+                    placeholder="Your message..."
+                  ></textarea>
+                </div>
+
+                <button
+                  type="submit"
+                  className="w-full px-6 py-3 bg-[#FFBE1A] text-black font-medium rounded-lg hover:bg-[#FFBE1A]/90 transition-colors"
+                >
+                  Send Message
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ Section */}
       <section className="py-20 px-4">
         <div className="max-w-3xl mx-auto">
@@ -409,23 +576,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Social Proof Section */}
-      <section className="py-20 px-4">
+      {/* Testimonials Section */}
+      <section className="py-24 px-4">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-4xl md:text-5xl font-bold text-white text-center mb-16">
-            5000+ makers built AI tools,<br />
-            SaaS, and more
-          </h2>
+          <div className="text-center mb-16">
+            <h2 className="text-5xl font-bold text-white mb-4">
+              5000+ makers built AI tools,<br />
+              SaaS, and more
+            </h2>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* First Testimonial with Stats */}
-            <div className="bg-[#111111] rounded-2xl p-8 border border-white/5">
-              <div className="flex items-start space-x-4 mb-4">
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
-                  <span className="text-white/70">👤</span>
+            {/* Testimonial 1 */}
+            <div className="bg-[#111111] rounded-xl p-6 border border-white/5">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center text-white font-medium">
+                  SC
                 </div>
                 <div>
                   <h3 className="text-white font-medium">Sarah Chen</h3>
-                  <p className="text-white/60 text-sm">CTO at TechStart</p>
+                  <p className="text-sm text-white/60">CTO at TechStart</p>
                 </div>
               </div>
               <p className="text-white/80 mb-6">
@@ -433,46 +603,84 @@ export default function Home() {
               </p>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="text-2xl font-semibold text-white mb-1">3 months</div>
-                  <div className="text-white/60 text-sm">Time Saved</div>
+                  <div className="text-2xl font-bold text-white">3 months</div>
+                  <div className="text-sm text-white/60">Time Saved</div>
                 </div>
                 <div>
-                  <div className="text-2xl font-semibold text-white mb-1">300%</div>
-                  <div className="text-white/60 text-sm">ROI</div>
+                  <div className="text-2xl font-bold text-[#4ADE80]">300%</div>
+                  <div className="text-sm text-white/60">ROI</div>
                 </div>
               </div>
             </div>
 
-            {/* Second Testimonial */}
-            <div className="bg-[#111111] rounded-2xl p-8 border border-white/5">
-              <div className="flex items-start space-x-4 mb-4">
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
-                  <span className="text-white/70">👤</span>
+            {/* Testimonial 2 */}
+            <div className="bg-[#111111] rounded-xl p-6 border border-white/5">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-medium">
+                  MJ
                 </div>
                 <div>
                   <h3 className="text-white font-medium">Mike Johnson</h3>
-                  <p className="text-white/60 text-sm">Lead Developer</p>
+                  <p className="text-sm text-white/60">Lead Developer</p>
                 </div>
               </div>
-              <p className="text-white/80">
+              <p className="text-white/80 mb-6">
                 The code quality is exceptional. It's like having a senior developer on the team.
               </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-2xl font-bold text-white">50+</div>
+                  <div className="text-sm text-white/60">Components</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-[#4ADE80]">100%</div>
+                  <div className="text-sm text-white/60">TypeScript</div>
+                </div>
+              </div>
             </div>
 
-            {/* Third Testimonial */}
-            <div className="bg-[#111111] rounded-2xl p-8 border border-white/5">
-              <div className="flex items-start space-x-4 mb-4">
-                <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0">
-                  <span className="text-white/70">👤</span>
+            {/* Testimonial 3 */}
+            <div className="bg-[#111111] rounded-xl p-6 border border-white/5">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-medium">
+                  LP
                 </div>
                 <div>
                   <h3 className="text-white font-medium">Lisa Park</h3>
-                  <p className="text-white/60 text-sm">Founder at AppLabs</p>
+                  <p className="text-sm text-white/60">Founder at AppLabs</p>
                 </div>
               </div>
-              <p className="text-white/80">
+              <p className="text-white/80 mb-6">
                 Best investment we made for our startup. The support is amazing too!
               </p>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <div className="text-2xl font-bold text-white">24/7</div>
+                  <div className="text-sm text-white/60">Support</div>
+                </div>
+                <div>
+                  <div className="text-2xl font-bold text-[#4ADE80]">95%</div>
+                  <div className="text-sm text-white/60">Satisfaction</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Social Proof */}
+          <div className="mt-16 text-center">
+            <div className="inline-flex items-center bg-white/5 px-4 py-2 rounded-full">
+              <div className="flex -space-x-2 mr-3">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="w-8 h-8 rounded-full border-2 border-[#111111] bg-gradient-to-br from-purple-500 to-pink-500"
+                    style={{ transform: `translateX(${i * -4}px)` }}
+                  />
+                ))}
+              </div>
+              <div className="text-white/60 text-sm">
+                Join <span className="text-white font-medium">5,000+</span> makers
+              </div>
             </div>
           </div>
         </div>
