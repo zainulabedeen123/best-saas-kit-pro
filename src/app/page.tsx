@@ -736,7 +736,7 @@ export default function Home() {
               <h3 className="font-semibold text-white mb-4">Connect</h3>
               <ul className="space-y-2">
                 <li><Link href="https://twitter.com" className="text-white/70 hover:text-white">Twitter</Link></li>
-                <li><Link href="https://github.com" className="text-white/70 hover:text-white">GitHub</Link></li>
+                <li><Link href="https://github.com/zainulabedeen123/best-saas-kit" target="_blank" rel="noopener noreferrer" className="text-white/70 hover:text-white">GitHub</Link></li>
                 <li><Link href="https://discord.com" className="text-white/70 hover:text-white">Discord</Link></li>
                 <li><Link href="/newsletter" className="text-white/70 hover:text-white">Newsletter</Link></li>
               </ul>
