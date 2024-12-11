@@ -1,2 +1,2 @@
-import AuthForm from './AuthForm';
-export { AuthForm }; 
+export { default as AuthForm } from './AuthForm'
+export { default as AuthPage } from './AuthPage' 
