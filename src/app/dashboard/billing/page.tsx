@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useRouter } from 'next/navigation'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { loadStripe } from '@stripe/stripe-js'
 import {
@@ -82,27 +83,25 @@ export default function BillingPage() {
   const [error, setError] = useState<string | null>(null)
   const [user, setUser] = useState<any>(null)
   const supabase = createClientComponentClient()
+  const router = useRouter()
+
+  const checkUser = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/auth')
+        return
+      }
+    } catch (error) {
+      console.error('Error checking user:', error)
+    } finally {
+      setIsLoading(false)
+    }
+  }, [supabase.auth, router])
 
   useEffect(() => {
     checkUser()
   }, [checkUser])
-
-  const checkUser = async () => {
-    try {
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
-      if (userError) throw userError
-      
-      if (user) {
-        setUser(user)
-        await fetchBillingData(user.id)
-      }
-    } catch (err) {
-      console.error('Error checking user:', err)
-      setError('Error checking authentication status')
-    } finally {
-      setIsLoading(false)
-    }
-  }
 
   async function fetchBillingData(userId: string) {
     try {
@@ -200,7 +199,7 @@ export default function BillingPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="text-white">Loading...</div>
       </div>
     )

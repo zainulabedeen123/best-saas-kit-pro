@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
 import {
@@ -16,41 +16,90 @@ export default function Header() {
   const router = useRouter()
   const supabase = createClientComponentClient()
 
-  useEffect(() => {
-    fetchUserAndCredits()
-  }, [fetchUserAndCredits])
-
-  const fetchUserAndCredits = async () => {
+  const fetchUserAndCredits = useCallback(async () => {
     try {
       // Get user
-      const { data: { user: currentUser } } = await supabase.auth.getUser()
-      if (!currentUser) throw new Error('No user found')
+      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser()
+      
+      if (userError) {
+        console.error('Error fetching user:', userError.message)
+        return
+      }
+      
+      if (!currentUser) {
+        console.log('No user found')
+        return
+      }
+      
       setUser(currentUser)
 
-      // Get credits
+      // Try to get existing credits
       const { data: credits, error: creditsError } = await supabase
         .from('user_credits')
         .select('credits')
         .eq('user_id', currentUser.id)
         .single()
 
-      if (creditsError && creditsError.code !== 'PGRST116') {
-        console.error('Error fetching credits:', creditsError)
+      // Handle the case where either the record doesn't exist or there's another error
+      if (creditsError) {
+        if (creditsError.code === 'PGRST116') {
+          // Record not found, try to create one
+          const { data: newCredits, error: insertError } = await supabase
+            .from('user_credits')
+            .insert([
+              { 
+                user_id: currentUser.id, 
+                credits: 0,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              }
+            ])
+            .select('credits')
+            .single()
+
+          if (insertError) {
+            if (insertError.code === '42P01') {
+              // Table doesn't exist, redirect to support
+              console.error('Credits table not found. Please contact support.')
+              return
+            }
+            console.error('Error creating credits record:', insertError.message)
+            return
+          }
+
+          setCredits(newCredits?.credits || 0)
+          return
+        }
+
+        // Handle other types of errors
+        console.error('Error fetching credits:', creditsError.message)
         return
       }
 
       setCredits(credits?.credits || 0)
     } catch (error) {
-      console.error('Error:', error)
+      if (error instanceof Error) {
+        console.error('Unexpected error:', error.message)
+      } else {
+        console.error('Unknown error:', error)
+      }
     }
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    fetchUserAndCredits()
+  }, [fetchUserAndCredits])
 
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut()
       router.push('/auth')
     } catch (error) {
-      console.error('Error signing out:', error)
+      if (error instanceof Error) {
+        console.error('Error signing out:', error.message)
+      } else {
+        console.error('Error signing out:', error)
+      }
     }
   }
 
