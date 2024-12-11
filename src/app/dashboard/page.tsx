@@ -10,7 +10,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     fetchProfile()
-  }, [])
+  }, [fetchProfile])
 
   async function fetchProfile() {
     try {

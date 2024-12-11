@@ -85,7 +85,7 @@ export default function BillingPage() {
 
   useEffect(() => {
     checkUser()
-  }, [])
+  }, [checkUser])
 
   const checkUser = async () => {
     try {

@@ -18,7 +18,7 @@ export default function Header() {
 
   useEffect(() => {
     fetchUserAndCredits()
-  }, [])
+  }, [fetchUserAndCredits])
 
   const fetchUserAndCredits = async () => {
     try {

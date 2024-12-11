@@ -39,7 +39,7 @@ export default function DashboardLayout({
 
   useEffect(() => {
     checkUser()
-  }, [])
+  }, [checkUser])
 
   async function checkUser() {
     try {
