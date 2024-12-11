@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 import Stripe from 'stripe'
-import { createClient } from '@/utils/supabase-server'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2024-11-20.acacia',
 })
 
 export async function POST(req: Request) {
@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     const body = await req.json()
     const { subscriptionId } = body
 
-    const supabase = createClient()
+    const supabase = createClientComponentClient()
 
     // Get the subscription from database
     const { data: subscription } = await supabase
