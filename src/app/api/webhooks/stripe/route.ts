@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 import { headers } from 'next/headers'
 import Stripe from 'stripe'
-import { createClient } from '@/utils/supabase-server'
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2023-10-16',
+  apiVersion: '2024-11-20.acacia',
 })
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET!
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
 
     if (!signature) {
       return NextResponse.json(
-        { error: 'No signature provided' },
+        { error: 'Missing stripe-signature header' },
         { status: 400 }
       )
     }
@@ -27,56 +27,48 @@ export async function POST(req: Request) {
       webhookSecret
     )
 
-    const supabase = createClient()
+    const supabase = createClientComponentClient()
 
+    // Handle the event
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object as Stripe.Checkout.Session
+
+        // Get the subscription
         const subscription = await stripe.subscriptions.retrieve(
           session.subscription as string
         )
 
-        // Create subscription record
+        // Add subscription to database
         await supabase.from('customer_subscriptions').insert({
           user_id: session.metadata?.userId,
           subscription_id: subscription.id,
-          plan_id: session.metadata?.planId,
           status: subscription.status,
-          current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-          current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+          price_id: subscription.items.data[0].price.id,
+          quantity: subscription.items.data[0].quantity,
           cancel_at_period_end: subscription.cancel_at_period_end,
-        })
-
-        break
-      }
-
-      case 'invoice.paid': {
-        const invoice = event.data.object as Stripe.Invoice
-
-        // Record successful payment
-        await supabase.from('billing_history').insert({
-          user_id: invoice.metadata?.userId,
-          subscription_id: invoice.subscription,
-          amount: invoice.amount_paid / 100, // Convert from cents
-          currency: invoice.currency,
-          status: 'succeeded',
-          invoice_url: invoice.hosted_invoice_url,
-        })
-
-        break
-      }
-
-      case 'invoice.payment_failed': {
-        const invoice = event.data.object as Stripe.Invoice
-
-        // Record failed payment
-        await supabase.from('billing_history').insert({
-          user_id: invoice.metadata?.userId,
-          subscription_id: invoice.subscription,
-          amount: invoice.amount_due / 100,
-          currency: invoice.currency,
-          status: 'failed',
-          invoice_url: invoice.hosted_invoice_url,
+          cancel_at: subscription.cancel_at
+            ? new Date(subscription.cancel_at * 1000).toISOString()
+            : null,
+          canceled_at: subscription.canceled_at
+            ? new Date(subscription.canceled_at * 1000).toISOString()
+            : null,
+          current_period_start: new Date(
+            subscription.current_period_start * 1000
+          ).toISOString(),
+          current_period_end: new Date(
+            subscription.current_period_end * 1000
+          ).toISOString(),
+          created: new Date(subscription.created * 1000).toISOString(),
+          ended_at: subscription.ended_at
+            ? new Date(subscription.ended_at * 1000).toISOString()
+            : null,
+          trial_start: subscription.trial_start
+            ? new Date(subscription.trial_start * 1000).toISOString()
+            : null,
+          trial_end: subscription.trial_end
+            ? new Date(subscription.trial_end * 1000).toISOString()
+            : null,
         })
 
         break
@@ -85,16 +77,32 @@ export async function POST(req: Request) {
       case 'customer.subscription.updated': {
         const subscription = event.data.object as Stripe.Subscription
 
-        // Update subscription record
+        // Update subscription in database
         await supabase
           .from('customer_subscriptions')
           .update({
             status: subscription.status,
-            current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
             cancel_at_period_end: subscription.cancel_at_period_end,
+            cancel_at: subscription.cancel_at
+              ? new Date(subscription.cancel_at * 1000).toISOString()
+              : null,
             canceled_at: subscription.canceled_at
               ? new Date(subscription.canceled_at * 1000).toISOString()
+              : null,
+            current_period_start: new Date(
+              subscription.current_period_start * 1000
+            ).toISOString(),
+            current_period_end: new Date(
+              subscription.current_period_end * 1000
+            ).toISOString(),
+            ended_at: subscription.ended_at
+              ? new Date(subscription.ended_at * 1000).toISOString()
+              : null,
+            trial_start: subscription.trial_start
+              ? new Date(subscription.trial_start * 1000).toISOString()
+              : null,
+            trial_end: subscription.trial_end
+              ? new Date(subscription.trial_end * 1000).toISOString()
               : null,
             updated_at: new Date().toISOString(),
           })
@@ -106,12 +114,27 @@ export async function POST(req: Request) {
       case 'customer.subscription.deleted': {
         const subscription = event.data.object as Stripe.Subscription
 
-        // Mark subscription as inactive
+        // Update subscription in database
         await supabase
           .from('customer_subscriptions')
           .update({
-            status: 'canceled',
-            canceled_at: new Date().toISOString(),
+            status: subscription.status,
+            cancel_at_period_end: subscription.cancel_at_period_end,
+            cancel_at: subscription.cancel_at
+              ? new Date(subscription.cancel_at * 1000).toISOString()
+              : null,
+            canceled_at: subscription.canceled_at
+              ? new Date(subscription.canceled_at * 1000).toISOString()
+              : null,
+            current_period_start: new Date(
+              subscription.current_period_start * 1000
+            ).toISOString(),
+            current_period_end: new Date(
+              subscription.current_period_end * 1000
+            ).toISOString(),
+            ended_at: subscription.ended_at
+              ? new Date(subscription.ended_at * 1000).toISOString()
+              : null,
             updated_at: new Date().toISOString(),
           })
           .eq('subscription_id', subscription.id)
@@ -122,9 +145,9 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ received: true })
   } catch (err) {
-    console.error('Webhook error:', err)
+    console.error('Error processing webhook:', err)
     return NextResponse.json(
-      { error: 'Webhook handler failed' },
+      { error: 'Error processing webhook' },
       { status: 400 }
     )
   }
