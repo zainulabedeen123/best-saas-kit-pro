@@ -1,20 +1,20 @@
 # Best SaaS Kit Pro 🚀
 
-A modern, production-ready SaaS starter kit built with Next.js 14, TypeScript, Tailwind CSS, and more. Perfect for launching your next SaaS project quickly and efficiently.
+A modern, production-ready SaaS starter kit built with Next.js 15, TypeScript, Tailwind CSS, and more. Perfect for launching your next SaaS project quickly and efficiently.
 
 ![SaaS Kit Banner](public/Saas-Header.png)
 
 ## 🌟 Features
 
-- ⚡ **Next.js 14** with App Router
-- 🎨 **Tailwind CSS** & **shadcn/ui** for beautiful UI
+- ⚡ **Next.js 15** with App Router & Server Actions
+- 🎨 **Tailwind CSS 3.3** & **shadcn/ui** for beautiful UI
 - 📱 **Fully Responsive** design
 - 🔐 **Authentication** with Supabase
 - 💳 **Stripe Integration** for payments
 - 📧 **Email Integration** with Resend
 - 🎯 **SEO Optimized**
 - 🌙 **Dark Mode** ready
-- 🔍 **Type Safe** with TypeScript
+- 🔍 **Type Safe** with TypeScript 5.3
 
 ## 🚀 Getting Started
 

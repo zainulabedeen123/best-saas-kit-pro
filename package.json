@@ -18,10 +18,10 @@
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^0.468.0",
-    "next": "14.0.3",
+    "next": "^15.1.0",
     "openai": "^4.76.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
     "recharts": "^2.14.1",
     "stripe": "^17.4.0",
     "tailwind-merge": "^2.5.5"
