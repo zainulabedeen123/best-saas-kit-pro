@@ -92,8 +92,11 @@ export default function BillingPage() {
         router.push('/auth')
         return
       }
+      setUser(user)
+      await fetchBillingData(user.id)
     } catch (error) {
       console.error('Error checking user:', error)
+      setError('Authentication error occurred')
     } finally {
       setIsLoading(false)
     }
