@@ -60,6 +60,7 @@ export default function AuthForm({ view: initialView }: AuthFormProps) {
 
       // Send welcome email
       try {
+        console.log('Sending welcome email...');
         const response = await fetch('/api/email/welcome', {
           method: 'POST',
           headers: {
@@ -72,11 +73,17 @@ export default function AuthForm({ view: initialView }: AuthFormProps) {
           }),
         });
 
+        const emailResult = await response.json();
+
         if (!response.ok) {
-          console.error('Failed to send welcome email');
+          console.error('Failed to send welcome email:', emailResult);
+          throw new Error(emailResult.error || 'Failed to send welcome email');
         }
+
+        console.log('Welcome email sent successfully:', emailResult);
       } catch (emailError) {
         console.error('Error sending welcome email:', emailError);
+        // Don't throw here, we still want to show the success message for signup
       }
 
       setView('sign-in')

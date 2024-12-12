@@ -4,8 +4,51 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { ChevronRightIcon } from '@heroicons/react/24/outline'
 
+// Type definitions
+type Step = {
+  title: string;
+  description: string;
+  code?: string;
+};
+
+type VideoContent = {
+  title: string;
+  description: string;
+  videoId: string;
+};
+
+type StepsContent = {
+  title: string;
+  description?: string;
+  steps: Step[];
+};
+
+type TextContent = {
+  title: string;
+  description: string;
+};
+
+type ContentItem = VideoContent | StepsContent | TextContent;
+
+type Section = {
+  id: string;
+  title: string;
+  content: ContentItem[];
+};
+
 // Documentation sections
-const sections = [
+const sections: Section[] = [
+  {
+    id: 'video-tutorial',
+    title: 'Video Tutorial',
+    content: [
+      {
+        title: 'Getting Started Tutorial',
+        description: 'Watch our comprehensive video tutorial to get started with Best SAAS Kit Pro.',
+        videoId: 'zXwkOqIDzSU',
+      },
+    ],
+  },
   {
     id: 'getting-started',
     title: 'Getting Started',
@@ -94,6 +137,67 @@ RESEND_API_KEY=your_resend_api_key`,
     ],
   },
   {
+    id: 'email',
+    title: 'Email Integration',
+    content: [
+      {
+        title: 'Resend Email Setup',
+        steps: [
+          {
+            title: 'Create Resend Account',
+            description: 'Sign up for a Resend account at https://resend.com and get your API key.',
+          },
+          {
+            title: 'Configure API Key',
+            description: 'Add your Resend API key to the .env.local file.',
+            code: 'RESEND_API_KEY=your_resend_api_key',
+          },
+          {
+            title: 'Verify Domain',
+            description: 'Add and verify your sending domain in the Resend dashboard for better deliverability.',
+          },
+        ],
+      },
+      {
+        title: 'Email Features',
+        description: `Integrated email functionality includes:
+- Welcome emails for new sign-ups
+- Beautiful, responsive email templates
+- React-based email components
+- Email delivery tracking
+- Custom email templates for various notifications`,
+      },
+      {
+        title: 'Customizing Email Templates',
+        description: 'Email templates are located in src/lib/email/templates/ and can be customized using React Email components.',
+        steps: [
+          {
+            title: 'Template Structure',
+            description: 'Each email template is a React component using @react-email/components.',
+            code: `import { 
+  Body, Container, Head, Html, 
+  Preview, Section, Text 
+} from '@react-email/components';
+
+export const EmailTemplate = ({ 
+  username = 'there' 
+}) => (
+  <Html>
+    <Head />
+    <Preview>Welcome message</Preview>
+    <Body>
+      <Container>
+        <Text>Hello {username}!</Text>
+      </Container>
+    </Body>
+  </Html>
+);`,
+          },
+        ],
+      },
+    ],
+  },
+  {
     id: 'payments',
     title: 'Payments',
     content: [
@@ -129,7 +233,15 @@ RESEND_API_KEY=your_resend_api_key`,
 ]
 
 export default function DocsPage() {
-  const [activeSection, setActiveSection] = useState('getting-started')
+  const [activeSection, setActiveSection] = useState('video-tutorial')
+
+  const isVideoContent = (item: ContentItem): item is VideoContent => {
+    return 'videoId' in item;
+  }
+
+  const isStepsContent = (item: ContentItem): item is StepsContent => {
+    return 'steps' in item;
+  }
 
   return (
     <div className="min-h-screen bg-[#000000]">
@@ -184,12 +296,23 @@ export default function DocsPage() {
               ?.content.map((item, index) => (
                 <div key={index} className="mb-12">
                   <h2 className="text-2xl font-bold text-white mb-6">{item.title}</h2>
+                  {isVideoContent(item) && (
+                    <div className="aspect-video mb-6">
+                      <iframe
+                        className="w-full h-full rounded-lg"
+                        src={`https://www.youtube.com/embed/${item.videoId}`}
+                        title="Tutorial Video"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
+                  )}
                   {item.description && (
                     <div className="prose prose-invert mb-6">
                       <p className="text-white/80 whitespace-pre-line">{item.description}</p>
                     </div>
                   )}
-                  {item.steps && (
+                  {isStepsContent(item) && item.steps && (
                     <div className="space-y-6">
                       {item.steps.map((step, stepIndex) => (
                         <div

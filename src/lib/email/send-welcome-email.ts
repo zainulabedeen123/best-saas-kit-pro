@@ -11,8 +11,12 @@ export const sendWelcomeEmail = async ({
   username: string;
   loginUrl?: string;
 }) => {
+  console.log('Rendering welcome email for:', { email, username, loginUrl });
+  
   const welcomeEmailComponent = WelcomeEmail({ username, loginUrl });
   const emailHtml = render(welcomeEmailComponent);
+  
+  console.log('Email component rendered successfully');
 
   return sendEmail({
     to: email,
