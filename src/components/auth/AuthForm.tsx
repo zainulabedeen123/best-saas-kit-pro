@@ -48,7 +48,7 @@ export default function AuthForm({ view: initialView }: AuthFormProps) {
     setError(null)
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -56,7 +56,28 @@ export default function AuthForm({ view: initialView }: AuthFormProps) {
         },
       })
 
-      if (error) throw error
+      if (signUpError) throw signUpError
+
+      // Send welcome email
+      try {
+        const response = await fetch('/api/email/welcome', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email,
+            username: email.split('@')[0], // Use the part before @ as username
+            loginUrl: `${window.location.origin}/auth/sign-in`,
+          }),
+        });
+
+        if (!response.ok) {
+          console.error('Failed to send welcome email');
+        }
+      } catch (emailError) {
+        console.error('Error sending welcome email:', emailError);
+      }
 
       setView('sign-in')
       alert('Please check your email to confirm your account')
