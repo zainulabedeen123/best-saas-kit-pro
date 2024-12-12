@@ -399,8 +399,26 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Launch Announcement Video */}
+      <section className="py-20 px-4 bg-white/5">
+        <div className="max-w-4xl mx-auto text-center">
+          <h2 className="text-3xl font-bold text-white mb-8">
+            Watch Our Launch Announcement
+          </h2>
+          <div className="aspect-video w-full">
+            <iframe
+              className="w-full h-full rounded-2xl shadow-2xl"
+              src="https://www.youtube.com/embed/JiXy9JGkGzo"
+              title="Best SAAS Kit Pro Launch Announcement"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
+          </div>
+        </div>
+      </section>
+
       {/* Pricing Section */}
-      <section className="py-20 px-4 bg-white/[0.02] border-y border-white/5">
+      <section className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <h2 className="text-3xl font-bold text-white text-center mb-12">
             Save hours of repetitive code,<br />ship fast, get profitable
