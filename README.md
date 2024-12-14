@@ -1,4 +1,4 @@
-# Best SaaS Kit Pro 🚀
+# Best SaaS Kit Pro - Advanced by Akshay N 🚀
 
 A modern, production-ready SaaS starter kit built with Next.js 15, TypeScript, Tailwind CSS, and more. Perfect for launching your next SaaS project quickly and efficiently.
 
@@ -15,6 +15,13 @@ A modern, production-ready SaaS starter kit built with Next.js 15, TypeScript, T
 - 🎯 **SEO Optimized**
 - 🌙 **Dark Mode** ready
 - 🔍 **Type Safe** with TypeScript 5.3
+
+## 🚀 Advanced Features Todo
+
+- 🎯 **Image Generation** Generating Images with AI
+- 🎯 **OpenAILike API Integration** which can be work with any openai like base URL
+- 🎯 **Blog** CMS Integration
+- 🎯 **More Coming**
 
 ## 🚀 Getting Started
 
@@ -150,4 +157,4 @@ If you have any questions or need help, please open an issue or contact us at su
 
 ---
 
-Built with ❤️ by [Your Name]
+Built with ❤️ by Akshay N
