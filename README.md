@@ -157,4 +157,16 @@ If you have any questions or need help, please open an issue or contact us at su
 
 ---
 
+## 🛠️ Git Commands (Reference)
+
+```
+- git init
+- git add .
+- git commit -m "Comment goes here"
+- git branch -M main
+- git remote add origin 'git url'
+- git push -u origin main
+
+```
+
 Built with ❤️ by Akshay N
