@@ -146,8 +146,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 💬 Support
 
-If you have any questions or need help, please open an issue or contact us at support@example.com.
+If you have any questions or need help, please open an issue or contact us at info@themetaversecompany.uk
 
 ---
 
-Built with ❤️ by [Your Name]
+Built with ❤️ by [Zain UI Abedeen](https://github.com/zainulabedeen123)
