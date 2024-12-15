@@ -31,19 +31,18 @@ function AuthContent() {
     checkUser()
   }, [router, searchParams, supabase.auth])
 
-  // Prevent hydration mismatch by not rendering until mounted
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-[#000000] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
         <div className="text-white">Loading...</div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-[#000000]">
+    <div className="min-h-screen bg-[#0A0A0A]">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-[#000000]/80 backdrop-blur-sm">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A] border-b border-white/10">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
@@ -54,10 +53,10 @@ function AuthContent() {
 
             {/* Navigation */}
             <nav className="flex items-center space-x-6">
-              <Link href="/features" className="text-white/80 hover:text-white transition-colors">
+              <Link href="/features" className="text-white/60 hover:text-white transition-colors">
                 Features
               </Link>
-              <Link href="/docs" className="text-white/80 hover:text-white transition-colors">
+              <Link href="/docs" className="text-white/60 hover:text-white transition-colors">
                 Documentation
               </Link>
               <Link 
@@ -72,7 +71,7 @@ function AuthContent() {
       </header>
 
       {/* Main Content */}
-      <div className="flex min-h-screen flex-col items-center justify-center">
+      <div className="min-h-screen flex flex-col pt-20">
         <AuthForm view={view} />
       </div>
     </div>
@@ -82,7 +81,7 @@ function AuthContent() {
 export default function AuthPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#000000] flex items-center justify-center">
+      <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center">
         <div className="text-white">Loading...</div>
       </div>
     }>

@@ -1,23 +1,29 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 interface AuthFormProps {
-  view: string
+  view?: string
 }
 
 export default function AuthForm({ view: initialView }: AuthFormProps) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [view, setView] = useState(initialView)
+  const [isSignUp, setIsSignUp] = useState(initialView === 'sign-up')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
   const router = useRouter()
   const searchParams = useSearchParams()
+  const returnUrl = searchParams?.get('returnUrl') || '/'
   const supabase = createClientComponentClient()
+
+  useEffect(() => {
+    setIsSignUp(initialView === 'sign-up')
+  }, [initialView])
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -30,13 +36,19 @@ export default function AuthForm({ view: initialView }: AuthFormProps) {
         password,
       })
 
-      if (error) throw error
+      if (error) {
+        if (error.message === 'Invalid login credentials') {
+          setError('Invalid email or password. Please try again.')
+        } else {
+          setError(error.message)
+        }
+        return
+      }
 
-      const returnUrl = searchParams.get('returnUrl') || '/dashboard'
       router.push(returnUrl)
-    } catch (err) {
-      console.error('Error signing in:', err)
-      setError(err instanceof Error ? err.message : 'Error signing in')
+      router.refresh()
+    } catch (error: any) {
+      setError(error.message)
     } finally {
       setIsLoading(false)
     }
@@ -48,7 +60,7 @@ export default function AuthForm({ view: initialView }: AuthFormProps) {
     setError(null)
 
     try {
-      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -56,123 +68,80 @@ export default function AuthForm({ view: initialView }: AuthFormProps) {
         },
       })
 
-      if (signUpError) throw signUpError
-
-      // Send welcome email
-      try {
-        console.log('Sending welcome email...');
-        const response = await fetch('/api/email/welcome', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            email,
-            username: email.split('@')[0], // Use the part before @ as username
-            loginUrl: `${window.location.origin}/auth/sign-in`,
-          }),
-        });
-
-        const emailResult = await response.json();
-
-        if (!response.ok) {
-          console.error('Failed to send welcome email:', emailResult);
-          throw new Error(emailResult.error || 'Failed to send welcome email');
-        }
-
-        console.log('Welcome email sent successfully:', emailResult);
-      } catch (emailError) {
-        console.error('Error sending welcome email:', emailError);
-        // Don't throw here, we still want to show the success message for signup
+      if (error) {
+        setError(error.message)
+        return
       }
 
-      setView('sign-in')
-      alert('Please check your email to confirm your account')
-    } catch (err) {
-      console.error('Error signing up:', err)
-      setError(err instanceof Error ? err.message : 'Error signing up')
+      setError('Please check your email for the confirmation link.')
+    } catch (error: any) {
+      setError(error.message)
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="w-full max-w-sm space-y-8 px-4">
-      <div>
-        <h2 className="text-center text-3xl font-bold text-white">
-          {view === 'sign-in' ? 'Sign in to your account' : 'Create a new account'}
+    <div className="flex flex-col items-center justify-center flex-1 w-full px-4">
+      <div className="w-full max-w-sm space-y-6">
+        <h2 className="text-2xl font-semibold text-white text-center">
+          {isSignUp ? 'Create your account' : 'Sign in to your account'}
         </h2>
-      </div>
-
-      <form className="space-y-6" onSubmit={view === 'sign-in' ? handleSignIn : handleSignUp}>
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-white/80">
-            Email address
-          </label>
-          <input
-            id="email"
-            type="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="mt-1 block w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#FFBE1A] focus:border-transparent"
-            placeholder="Enter your email"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-white/80">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="mt-1 block w-full rounded-lg bg-white/5 border border-white/10 px-4 py-2.5 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-[#FFBE1A] focus:border-transparent"
-            placeholder="Enter your password"
-          />
-        </div>
 
         {error && (
-          <div className="text-red-500 text-sm">
-            {error}
+          <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+            <p className="text-red-500 text-sm">{error}</p>
           </div>
         )}
 
-        <div>
+        <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
+          <div className="space-y-4">
+            <div>
+              <input
+                id="email-address"
+                name="email"
+                type="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-3 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-[#FFBE1A] focus:border-transparent"
+                placeholder="Email address"
+              />
+            </div>
+            <div>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                autoComplete={isSignUp ? 'new-password' : 'current-password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-3 py-2 bg-[#0A0A0A] border border-white/10 rounded-lg text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-[#FFBE1A] focus:border-transparent"
+                placeholder="Password"
+              />
+            </div>
+          </div>
+
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full flex justify-center py-3 px-4 rounded-lg bg-[#FFBE1A] hover:bg-[#FFBE1A]/90 text-black font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FFBE1A] disabled:opacity-50"
+            className="w-full py-2 px-4 bg-[#FFBE1A] text-black rounded-lg font-medium hover:bg-[#FFBE1A]/90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#FFBE1A] disabled:opacity-50 transition-colors"
           >
-            {isLoading ? 'Loading...' : view === 'sign-in' ? 'Sign in' : 'Sign up'}
+            {isLoading ? 'Loading...' : (isSignUp ? 'Sign up' : 'Sign in')}
           </button>
-        </div>
-      </form>
 
-      <div className="text-center">
-        <button
-          onClick={() => setView(view === 'sign-in' ? 'sign-up' : 'sign-in')}
-          className="text-[#FFBE1A] hover:underline"
-        >
-          {view === 'sign-in'
-            ? "Don't have an account? Sign up"
-            : 'Already have an account? Sign in'}
-        </button>
+          <div className="text-center">
+            <Link
+              href={isSignUp ? '/auth' : '/auth?view=sign-up'}
+              className="text-[#FFBE1A] hover:text-[#FFBE1A]/80 text-sm font-medium"
+            >
+              {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
+            </Link>
+          </div>
+        </form>
       </div>
-
-      {view === 'sign-in' && (
-        <div className="text-center">
-          <Link
-            href="/auth/reset-password"
-            className="text-[#FFBE1A] hover:underline text-sm"
-          >
-            Forgot your password?
-          </Link>
-        </div>
-      )}
     </div>
   )
 } 

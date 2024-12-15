@@ -7,11 +7,11 @@ import { useRouter } from 'next/navigation'
 
 interface Profile {
   id: string
-  full_name?: string
   username?: string
-  website?: string
-  bio?: string
+  full_name?: string
   avatar_url?: string | null
+  website?: string
+  email?: string
 }
 
 export default function ProfileSettings() {
@@ -23,33 +23,106 @@ export default function ProfileSettings() {
   const router = useRouter()
   const supabase = createClientComponentClient()
 
-  useEffect(() => {
-    fetchProfile()
-  }, [fetchProfile])
-
-  async function fetchProfile() {
+  const fetchProfile = async () => {
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      setError(null)
+      
+      // Get user data
+      const userResponse = await supabase.auth.getUser()
+      console.log('Auth response:', userResponse)
+      
+      if (userResponse.error) {
+        console.error('Auth error:', userResponse.error)
+        throw new Error(`Authentication error: ${userResponse.error.message}`)
+      }
+
+      const user = userResponse.data.user
       if (!user) {
+        console.log('No user found, redirecting to auth')
         router.push('/auth')
         return
       }
 
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', user.id)
-        .single()
+      console.log('User found:', user.id)
 
-      if (error) throw error
-      setProfile(data || { id: user.id })
+      // First check if profile exists
+      const { data: profiles, error: profileError } = await supabase
+        .from('profiles')
+        .select('id, username, full_name, avatar_url, website, email')
+        .eq('id', user.id)
+
+      console.log('Profile query response:', { data: profiles, error: profileError })
+
+      if (profileError) {
+        console.error('Profile error:', profileError)
+        throw new Error(`Profile error: ${profileError.message}`)
+      }
+
+      // Handle multiple profiles case
+      if (profiles && profiles.length > 1) {
+        console.log('Multiple profiles found, cleaning up...')
+        
+        // Delete duplicate profiles
+        const [keepProfile, ...duplicates] = profiles
+        if (duplicates.length > 0) {
+          const { error: deleteError } = await supabase
+            .from('profiles')
+            .delete()
+            .in('id', duplicates.map(p => p.id))
+          
+          if (deleteError) {
+            console.error('Error cleaning up duplicate profiles:', deleteError)
+          }
+        }
+        
+        setProfile(keepProfile)
+      }
+      // Handle no profile case
+      else if (!profiles || profiles.length === 0) {
+        console.log('No profile found, creating new profile...')
+        const { data: newProfile, error: insertError } = await supabase
+          .from('profiles')
+          .insert([{ 
+            id: user.id,
+            username: '',
+            full_name: '',
+            avatar_url: null,
+            website: '',
+            email: user.email || ''
+          }])
+          .select()
+          .single()
+
+        console.log('New profile creation:', { data: newProfile, error: insertError })
+
+        if (insertError) {
+          console.error('Profile creation error:', insertError)
+          throw new Error(`Failed to create profile: ${insertError.message}`)
+        }
+
+        setProfile(newProfile)
+      }
+      // Handle single profile case
+      else {
+        console.log('Single profile found')
+        setProfile(profiles[0])
+      }
+
     } catch (error) {
-      console.error('Error fetching profile:', error)
-      setError('Failed to load profile')
+      console.error('Detailed error:', error)
+      if (error instanceof Error) {
+        setError(`Error fetching profile: ${error.message}`)
+      } else {
+        setError('An unexpected error occurred while loading your profile')
+      }
     } finally {
       setIsLoading(false)
     }
   }
+
+  useEffect(() => {
+    fetchProfile()
+  }, [])
 
   async function updateProfile(e: React.FormEvent) {
     e.preventDefault()
@@ -289,6 +362,20 @@ export default function ProfileSettings() {
             </div>
 
             <div>
+              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={profile?.email || ''}
+                onChange={(e) => setProfile(profile ? { ...profile, email: e.target.value } : null)}
+                className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500/20"
+                placeholder="Enter your email"
+              />
+            </div>
+
+            <div>
               <label htmlFor="website" className="block text-sm font-medium text-white mb-2">
                 Website
               </label>
@@ -299,20 +386,6 @@ export default function ProfileSettings() {
                 onChange={(e) => setProfile(profile ? { ...profile, website: e.target.value } : null)}
                 className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500/20"
                 placeholder="https://example.com"
-              />
-            </div>
-
-            <div>
-              <label htmlFor="bio" className="block text-sm font-medium text-white mb-2">
-                Bio
-              </label>
-              <textarea
-                id="bio"
-                value={profile?.bio || ''}
-                onChange={(e) => setProfile(profile ? { ...profile, bio: e.target.value } : null)}
-                rows={4}
-                className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-green-500/20 focus:border-green-500/20"
-                placeholder="Write a short bio about yourself"
               />
             </div>
 

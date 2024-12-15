@@ -1,17 +1,12 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
+import './globals.css'
+import { Inter } from 'next/font/google'
 
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
+const inter = Inter({ subsets: ['latin'] })
 
-export const metadata: Metadata = {
-  title: "Best SAAS Kit Pro",
-  description: "Ship your startup in days, not weeks",
-};
+export const metadata = {
+  title: 'Best SAAS Kit Pro',
+  description: 'The ultimate starter kit for your SAAS project',
+}
 
 export default function RootLayout({
   children,
@@ -19,10 +14,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} min-h-screen bg-primary text-secondary antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${inter.className} min-h-screen bg-primary text-secondary antialiased`} suppressHydrationWarning>
         {children}
       </body>
     </html>
-  );
+  )
 }

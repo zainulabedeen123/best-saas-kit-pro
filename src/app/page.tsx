@@ -151,6 +151,14 @@ export default function Home() {
                 <BookOpenIcon className="w-4 h-4" />
                 <span>Docs</span>
               </Link>
+              <Link 
+                href="https://www.reddit.com/r/BestSAASKit/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="text-sm text-white/70 hover:text-white"
+              >
+                Community
+              </Link>
               <Link href="/blog" className="text-sm text-white/70 hover:text-white">
                 Blog
               </Link>
@@ -744,7 +752,14 @@ export default function Home() {
             <div>
               <h3 className="font-semibold text-white mb-4">Resources</h3>
               <ul className="space-y-2">
-                <li><Link href="/community" className="text-white/70 hover:text-white">Community</Link></li>
+                <li><Link 
+                  href="https://www.reddit.com/r/BestSAASKit/" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-white/70 hover:text-white"
+                >
+                  Community
+                </Link></li>
                 <li><Link href="/help" className="text-white/70 hover:text-white">Help Center</Link></li>
                 <li><Link href="/status" className="text-white/70 hover:text-white">Status</Link></li>
                 <li><Link href="/terms" className="text-white/70 hover:text-white">Terms of Service</Link></li>

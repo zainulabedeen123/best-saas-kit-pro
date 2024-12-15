@@ -1,158 +1,182 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import { useRouter } from 'next/navigation'
-import {
-  CreditCardIcon,
-  UserCircleIcon,
-  ChevronDownIcon,
-} from '@heroicons/react/24/outline'
+import Link from 'next/link'
+import { Database } from '@/types/supabase'
+
+interface User {
+  id: string
+  email: string
+  credits: number
+}
 
 export default function Header() {
-  const [isProfileOpen, setIsProfileOpen] = useState(false)
-  const [credits, setCredits] = useState<number>(0)
-  const [user, setUser] = useState<any>(null)
+  const [user, setUser] = useState<User | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+
+  const supabase = createClientComponentClient<Database>()
   const router = useRouter()
-  const supabase = createClientComponentClient()
 
-  const fetchUserAndCredits = useCallback(async () => {
-    try {
-      // Get user
-      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser()
-      
-      if (userError) {
-        console.error('Error fetching user:', userError.message)
-        return
-      }
-      
-      if (!currentUser) {
-        console.log('No user found')
-        return
-      }
-      
-      setUser(currentUser)
-
-      // Try to get existing credits
-      const { data: credits, error: creditsError } = await supabase
-        .from('user_credits')
-        .select('credits')
-        .eq('user_id', currentUser.id)
-        .single()
-
-      // Handle the case where either the record doesn't exist or there's another error
-      if (creditsError) {
-        if (creditsError.code === 'PGRST116') {
-          // Record not found, try to create one
-          const { data: newCredits, error: insertError } = await supabase
-            .from('user_credits')
-            .insert([
-              { 
-                user_id: currentUser.id, 
-                credits: 0,
-                created_at: new Date().toISOString(),
-                updated_at: new Date().toISOString()
-              }
-            ])
-            .select('credits')
-            .single()
-
-          if (insertError) {
-            if (insertError.code === '42P01') {
-              // Table doesn't exist, redirect to support
-              console.error('Credits table not found. Please contact support.')
-              return
-            }
-            console.error('Error creating credits record:', insertError.message)
-            return
-          }
-
-          setCredits(newCredits?.credits || 0)
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        
+        if (!session) {
+          setUser(null)
+          setIsLoading(false)
           return
         }
 
-        // Handle other types of errors
-        console.error('Error fetching credits:', creditsError.message)
-        return
-      }
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id, email, credits')
+          .eq('id', session.user.id)
+          .single()
 
-      setCredits(credits?.credits || 0)
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error('Unexpected error:', error.message)
-      } else {
-        console.error('Unknown error:', error)
+        if (userData) {
+          setUser({
+            id: userData.id,
+            email: session.user.email || userData.email,
+            credits: userData.credits
+          })
+        }
+      } catch (error) {
+        console.error('Error:', error)
+        setError('Error loading user data')
+      } finally {
+        setIsLoading(false)
       }
     }
-  }, [supabase])
 
-  useEffect(() => {
-    fetchUserAndCredits()
-  }, [fetchUserAndCredits])
+    fetchUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('id, email, credits')
+          .eq('id', session.user.id)
+          .single()
+
+        if (userData) {
+          setUser({
+            id: userData.id,
+            email: session.user.email || userData.email,
+            credits: userData.credits
+          })
+        }
+      } else {
+        setUser(null)
+        router.replace('/auth')
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [supabase, router])
 
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut()
-      router.push('/auth')
+      router.replace('/auth')
     } catch (error) {
-      if (error instanceof Error) {
-        console.error('Error signing out:', error.message)
-      } else {
-        console.error('Error signing out:', error)
-      }
+      console.error('Error signing out:', error)
+      setError('Error signing out')
     }
   }
 
-  return (
-    <header className="h-16 bg-black border-b border-white/5">
-      <div className="h-full px-4 flex items-center justify-between">
-        {/* Left side - Dashboard Title */}
-        <div className="flex items-center">
-          <h1 className="text-white font-bold text-xl">Dashboard</h1>
+  if (isLoading) {
+    return (
+      <header className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A] border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="animate-pulse bg-white/5 h-8 w-24 rounded"></div>
+            <div className="animate-pulse bg-white/5 h-8 w-32 rounded"></div>
+          </div>
         </div>
+      </header>
+    )
+  }
 
-        {/* Right side - Credits & Profile */}
-        <div className="flex items-center space-x-4">
-          {/* Credits Display */}
-          <div className="flex items-center text-sm">
-            <CreditCardIcon className="h-5 w-5 text-[#FFBE1A] mr-2" />
-            <span className="text-white/80">{credits} Credits</span>
+  return (
+    <header className="fixed top-0 left-0 right-0 z-50 bg-[#0A0A0A] border-b border-white/10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center">
+            <Link href="/" className="text-white font-bold text-xl">
+              SAAS Kit
+            </Link>
           </div>
 
-          {/* Profile Dropdown */}
-          <div className="relative">
-            <button
-              onClick={() => setIsProfileOpen(!isProfileOpen)}
-              className="flex items-center space-x-2 text-sm text-white/80 hover:text-white transition-colors"
-            >
-              <UserCircleIcon className="h-5 w-5" />
-              <span className="max-w-[150px] truncate">{user?.email}</span>
-              <ChevronDownIcon className={`h-4 w-4 transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
-            </button>
-
-            {isProfileOpen && (
-              <div className="absolute right-0 mt-2 w-48 bg-[#111111] border border-white/5 rounded-lg shadow-lg py-1 z-50">
-                <button
-                  onClick={() => router.push('/dashboard/profile')}
-                  className="block w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white"
-                >
-                  Profile Settings
-                </button>
-                <button
-                  onClick={() => router.push('/dashboard/billing')}
-                  className="block w-full text-left px-4 py-2 text-sm text-white/80 hover:bg-white/5 hover:text-white"
-                >
-                  Billing & Credits
-                </button>
-                <div className="border-t border-white/5 my-1" />
-                <button
-                  onClick={handleSignOut}
-                  className="block w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-white/5"
-                >
-                  Sign Out
-                </button>
+          <div className="flex items-center space-x-4">
+            {error && (
+              <div className="text-red-500 text-sm">
+                {error}
               </div>
             )}
+            
+            <div className="flex items-center space-x-4">
+              <div className="text-white/60">
+                Credits: {user?.credits || 0}
+              </div>
+              <div className="relative">
+                <button
+                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  className="flex items-center space-x-2 text-white hover:text-white/80"
+                >
+                  <span>{user?.email}</span>
+                  <svg
+                    className={`w-5 h-5 transition-transform ${isMenuOpen ? 'rotate-180' : ''}`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+
+                {isMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
+                    <div className="py-1">
+                      <Link
+                        href="/dashboard"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Dashboard
+                      </Link>
+                      <Link
+                        href="/settings"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={() => setIsMenuOpen(false)}
+                      >
+                        Settings
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setIsMenuOpen(false)
+                          handleSignOut()
+                        }}
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Sign out
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>

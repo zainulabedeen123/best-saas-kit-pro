@@ -114,11 +114,15 @@ export default function BillingPage() {
         .select('*')
         .eq('user_id', userId)
         .eq('status', 'active')
-        .single()
+        .maybeSingle()
 
-      if (subError && subError.code !== 'PGRST116') {
+      if (subError) {
         console.error('Error fetching subscription:', subError)
-      } else {
+        // Don't set error for no subscription found
+        if (subError.code !== 'PGRST116') {
+          setError('Error loading subscription data')
+        }
+      } else if (subscription) {
         setCurrentSubscription(subscription)
       }
 
@@ -132,6 +136,10 @@ export default function BillingPage() {
 
       if (historyError) {
         console.error('Error fetching billing history:', historyError)
+        // Don't set error for no history found
+        if (historyError.code !== 'PGRST116') {
+          setError('Error loading billing history')
+        }
       } else {
         setBillingHistory(history || [])
       }
