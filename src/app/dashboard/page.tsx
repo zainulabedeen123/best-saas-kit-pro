@@ -48,7 +48,7 @@ export default function Dashboard() {
           </h2>
           <p className="text-white/60 mb-4">
             This is your AI-powered SAAS starter kit. You can use the chat interface
-            to interact with GPT-4 and build amazing AI applications.
+            to interact with GPT-4o and build amazing AI applications.
           </p>
           <ul className="space-y-2 text-white/60">
             <li className="flex items-center">
@@ -57,7 +57,7 @@ export default function Dashboard() {
             </li>
             <li className="flex items-center">
               <span className="w-2 h-2 bg-green-500 rounded-full mr-2" />
-              Responses are powered by GPT-4
+              Responses are powered by GPT-4o
             </li>
             <li className="flex items-center">
               <span className="w-2 h-2 bg-green-500 rounded-full mr-2" />

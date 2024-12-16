@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   AreaChart,
   Area,
@@ -22,6 +22,8 @@ import {
   ClockIcon,
   ChartBarIcon,
 } from '@heroicons/react/24/outline'
+import { User } from '@supabase/supabase-js' // Import types from Supabase
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 
 // Sample data - replace with real data from your API
 const monthlyData = [
@@ -54,6 +56,78 @@ const userActivity = [
   { name: '23:59', users: 200 },
 ]
 
+export default function AnalyticsPage() {
+  const [timeRange, setTimeRange] = useState('7d')
+  const supabase = createClientComponentClient()
+const [credits, setCredits] = useState<number>(0)
+const [user, setUser] = useState<User | null>(null)
+
+const fetchUserAndCredits = useCallback(async (): Promise<void> => {
+  try {
+    const { data: { user: currentUser  }, error: userError } = await supabase.auth.getUser ()
+
+    if (userError) {
+      console.error('Error fetching user:', userError.message)
+      return
+    }
+
+    if (!currentUser ) {
+      console.log('No user found')
+      return
+    }
+
+    setUser (currentUser )
+
+    const { data: creditsData, error: creditsError } = await supabase
+      .from('user_credits')
+      .select('credits')
+      .eq('user_id', currentUser .id)
+      .single()
+
+    if (creditsError) {
+      if (creditsError.code === 'PGRST116') {
+        const { data: newCredits, error: insertError } = await supabase
+          .from('user_credits')
+          .insert([
+            {
+              user_id: currentUser .id,
+              credits: 0,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
+          ])
+          .select('credits')
+          .single()
+
+        if (insertError) {
+          console.error('Error creating credits record:', insertError.message)
+          return
+        }
+
+        setCredits(newCredits?.credits || 0)
+        return
+      }
+
+      console.error('Error fetching credits:', creditsError.message)
+      return
+    }
+
+    setCredits(creditsData?.credits || 0)
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error('Unexpected error:', error.message)
+    } else {
+      console.error('Unknown error:', error)
+    }
+  }
+}, [supabase])
+
+useEffect(() => {
+  fetchUserAndCredits()
+}, [fetchUserAndCredits])
+
+// Stats
+
 const stats = [
   {
     name: 'Total Users',
@@ -63,8 +137,8 @@ const stats = [
     icon: UsersIcon,
   },
   {
-    name: 'Credits Used',
-    value: '24,981',
+    name: 'Credits Available',
+    value: credits,
     change: '+8.2%',
     trend: 'up',
     icon: CreditCardIcon,
@@ -84,9 +158,6 @@ const stats = [
     icon: ChartBarIcon,
   },
 ]
-
-export default function AnalyticsPage() {
-  const [timeRange, setTimeRange] = useState('7d')
 
   return (
     <div className="space-y-8">

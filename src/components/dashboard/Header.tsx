@@ -8,75 +8,79 @@ import {
   UserCircleIcon,
   ChevronDownIcon,
 } from '@heroicons/react/24/outline'
+import { User } from '@supabase/supabase-js' // Import types from Supabase
 
 export default function Header() {
-  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false)
   const [credits, setCredits] = useState<number>(0)
-  const [user, setUser] = useState<any>(null)
+  const [animatedCredits, setAnimatedCredits] = useState<number>(0)
+  const [user, setUser ] = useState<User | null>(null)
   const router = useRouter()
   const supabase = createClientComponentClient()
 
-  const fetchUserAndCredits = useCallback(async () => {
+  const fetchUserAndCredits = useCallback(async (): Promise<void> => {
     try {
-      // Get user
       const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser()
-      
+  
       if (userError) {
         console.error('Error fetching user:', userError.message)
         return
       }
-      
+  
       if (!currentUser) {
         console.log('No user found')
         return
       }
-      
+  
       setUser(currentUser)
-
-      // Try to get existing credits
-      const { data: credits, error: creditsError } = await supabase
+  
+      const { data: creditsData, error: creditsError } = await supabase
         .from('user_credits')
         .select('credits')
         .eq('user_id', currentUser.id)
         .single()
-
-      // Handle the case where either the record doesn't exist or there's another error
+  
       if (creditsError) {
-        if (creditsError.code === 'PGRST116') {
-          // Record not found, try to create one
-          const { data: newCredits, error: insertError } = await supabase
+        if (creditsError.code === 'PGRST116' && currentUser.email_confirmed_at) {
+          // Only insert credits if the user does not already have a record
+          const { data: existingCredits } = await supabase
             .from('user_credits')
-            .insert([
-              { 
-                user_id: currentUser.id, 
-                credits: 0,
+            .select('credits')
+            .eq('user_id', currentUser.id)
+            .single()
+  
+          // Check if existingCredits is null or undefined before inserting
+          if (!existingCredits) {
+            const { data: newCredits, error: insertError } = await supabase
+              .from('user_credits')
+              .insert([{
+                user_id: currentUser.id,
+                credits: 500,
                 created_at: new Date().toISOString(),
                 updated_at: new Date().toISOString()
-              }
-            ])
-            .select('credits')
-            .single()
-
-          if (insertError) {
-            if (insertError.code === '42P01') {
-              // Table doesn't exist, redirect to support
-              console.error('Credits table not found. Please contact support.')
+              }])
+              .select('credits')
+              .single()
+  
+            if (insertError) {
+              console.error('Error creating credits record:', insertError.message)
               return
             }
-            console.error('Error creating credits record:', insertError.message)
+  
+            setCredits(newCredits?.credits || 0)
             return
+          } else {
+            console.log('User already has credits:', existingCredits.credits);
+            setCredits(existingCredits.credits);
+            return;
           }
-
-          setCredits(newCredits?.credits || 0)
-          return
         }
-
-        // Handle other types of errors
+  
         console.error('Error fetching credits:', creditsError.message)
         return
       }
-
-      setCredits(credits?.credits || 0)
+  
+      setCredits(creditsData?.credits || 0)
     } catch (error) {
       if (error instanceof Error) {
         console.error('Unexpected error:', error.message)
@@ -89,6 +93,33 @@ export default function Header() {
   useEffect(() => {
     fetchUserAndCredits()
   }, [fetchUserAndCredits])
+
+  useEffect(() => {
+    // Animate credits from 0 to the actual credits value
+    const animateCredits = () => {
+      const start = animatedCredits;
+      const end = credits;
+      const duration = 1000; // Duration of the animation in ms
+      const startTime = performance.now();
+
+      const animate = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1); // Clamp progress to 1
+
+        // Use linear interpolation
+        const currentCredits = Math.floor(start + (end - start) * progress);
+        setAnimatedCredits(currentCredits);
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      requestAnimationFrame(animate);
+    };
+
+    animateCredits();
+  }, [credits])
 
   const handleSignOut = async () => {
     try {
@@ -106,20 +137,16 @@ export default function Header() {
   return (
     <header className="h-16 bg-black border-b border-white/5">
       <div className="h-full px-4 flex items-center justify-between">
-        {/* Left side - Dashboard Title */}
         <div className="flex items-center">
           <h1 className="text-white font-bold text-xl">Dashboard</h1>
         </div>
 
-        {/* Right side - Credits & Profile */}
         <div className="flex items-center space-x-4">
-          {/* Credits Display */}
           <div className="flex items-center text-sm">
             <CreditCardIcon className="h-5 w-5 text-[#FFBE1A] mr-2" />
-            <span className="text-white/80">{credits} Credits</span>
+            <span className="text-white/80">{animatedCredits} Credits</span>
           </div>
 
-          {/* Profile Dropdown */}
           <div className="relative">
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
@@ -158,4 +185,4 @@ export default function Header() {
       </div>
     </header>
   )
-} 
+}
