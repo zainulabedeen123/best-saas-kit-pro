@@ -1,5 +1,7 @@
 # Best SaaS Kit Pro - Advanced by Akshay N 🚀
 
+When you create an account on [Best SaaS Kit Advanced](https://saaskit.vasarai.net/), you'll be getting 500 Credits to use for free. Please don't spam 😅. With those credits currently you can try chat with gpt-4o and image ai generation.
+
 A modern, production-ready SaaS starter kit built with Next.js 15, TypeScript, Tailwind CSS, and more. Perfect for launching your next SaaS project quickly and efficiently.
 
 ![SaaS Kit Banner](public/Saas-Header.png)
@@ -18,10 +20,16 @@ A modern, production-ready SaaS starter kit built with Next.js 15, TypeScript, T
 
 ## 🚀 Advanced Features Todo
 
-- 🎯 **Image Generation** Generating Images with AI
-- 🎯 **OpenAILike API Integration** which can be work with any openai like base URL
-- 🎯 **Blog** CMS Integration
+- 🎯 **Image Generation** Generating Images with AI ✅
+- 🎯 **OpenAILike API Integration** which can be work with any openai like base URL✅
+- 🎯 **Blog** CMS Integration ❌
 - 🎯 **More Coming**
+
+## 🛠️ Updates
+
+- 🎯 **Image Generation** Generating Images with AI ✅
+
+![AI Image Update](public/ai-image-update.png)
 
 ## 🚀 Getting Started
 
