@@ -4,8 +4,8 @@ import { NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
-    baseURL: process.env.OPENAI_API_BASE_URL,
-    apiKey: process.env.OPENAI_API_KEY,
+    baseURL: process.env.LLM_BASE_URL,
+    apiKey: process.env.LLM_API_KEY,
 });
 
 export async function POST(req: Request) {
