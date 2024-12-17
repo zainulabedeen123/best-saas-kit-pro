@@ -43,6 +43,8 @@ const MediaStreamButton = memo(
   ),
 );
 
+MediaStreamButton.displayName = "MediaStreamButton";
+
 function ControlTray({
   videoRef,
   children,
@@ -196,3 +198,4 @@ function ControlTray({
 }
 
 export default memo(ControlTray);
+ControlTray.displayName = "ControlTray";
