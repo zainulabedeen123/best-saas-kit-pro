@@ -29,6 +29,14 @@ A modern, production-ready SaaS starter kit built with Next.js 15, TypeScript, T
 
 ![AI Image Update](public/updates/ai-image-update.png)
 
+- 🎯 **Gemini 2.0 Integration** This Saas Kit is Awesome, you can integrate anything 🔥
+
+Demo - [YouTube](https://youtu.be/zvUtoe5mpm0)
+
+Try Now - [Saaskit](https://saaskit.vasarai.net/)
+
+![AI Image Update](public/updates/gemini-ai-update.png)
+
 ## 🚀 Getting Started
 
 ### Prerequisites
