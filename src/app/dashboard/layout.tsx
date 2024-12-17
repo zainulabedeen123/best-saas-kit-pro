@@ -22,6 +22,7 @@ interface NavItem {
 
 const navigation: NavItem[] = [
   { name: 'Overview', href: '/dashboard', icon: HomeIcon },
+  { name: 'Gemini 2.0', href: '/dashboard/gemini', icon: PhotoIcon },
   { name: 'Generate Images', href: '/dashboard/images', icon: PhotoIcon },
   { name: 'Analytics', href: '/dashboard/analytics', icon: ChartBarIcon },
   { name: 'Profile', href: '/dashboard/profile', icon: UserCircleIcon },

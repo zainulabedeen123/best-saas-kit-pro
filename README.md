@@ -4,8 +4,6 @@ When you create an account on [Best SaaS Kit Advanced](https://saaskit.vasarai.n
 
 A modern, production-ready SaaS starter kit built with Next.js 15, TypeScript, Tailwind CSS, and more. Perfect for launching your next SaaS project quickly and efficiently.
 
-![SaaS Kit Banner](public/Saas-Header.png)
-
 ## 🌟 Features
 
 - ⚡ **Next.js 15** with App Router & Server Actions
@@ -29,7 +27,7 @@ A modern, production-ready SaaS starter kit built with Next.js 15, TypeScript, T
 
 - 🎯 **Image Generation** Generating Images with AI ✅
 
-![AI Image Update](public/ai-image-update.png)
+![AI Image Update](public/updates/ai-image-update.png)
 
 ## 🚀 Getting Started
 

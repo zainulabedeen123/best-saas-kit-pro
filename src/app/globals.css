@@ -36,3 +36,8 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background-color: rgba(255, 255, 255, 0.2);
 }
+
+.main-wrapper-gemini-container {
+  width: auto;
+  height: 100vh;
+}
