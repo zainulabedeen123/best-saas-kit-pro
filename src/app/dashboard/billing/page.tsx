@@ -17,7 +17,7 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 const pricingPlans = [
   {
     title: 'Starter',
-    price: '99',
+    price: '10',
     description: 'Perfect for side projects and small startups',
     features: [
       'Up to 5 team members',
@@ -26,11 +26,11 @@ const pricingPlans = [
       '5GB storage',
       'API access',
     ],
-    priceId: 'price_1QTPalGI6vk81n8V8PtyW1ow'
+    priceId: 'price_1QVXKhLqVp8miPvf1RIkrgGv'
   },
   {
     title: 'Pro',
-    price: '249',
+    price: '50',
     description: 'Best for growing businesses',
     features: [
       'Unlimited team members',
@@ -41,11 +41,11 @@ const pricingPlans = [
       'Custom integrations',
     ],
     popular: true,
-    priceId: 'price_1QTPbgGI6vk81n8VgYFOi983'
+    priceId: 'price_1QVXLzLqVp8miPvfXRPFn8gQ'
   },
   {
     title: 'Enterprise',
-    price: '999',
+    price: '99',
     description: 'For large scale applications',
     features: [
       'Unlimited everything',
@@ -55,7 +55,7 @@ const pricingPlans = [
       'API access',
       'Custom development',
     ],
-    priceId: 'price_1QTPcUGI6vk81n8V9567pzL9'
+    priceId: 'price_1QVXOULqVp8miPvftvIGgGSs'
   },
 ]
 
